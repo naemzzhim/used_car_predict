@@ -1,0 +1,17 @@
+{
+  "target_transform": "log1p",
+  "unit_factor": 1.0,
+  "currency": "VND",
+  "features": [
+    "Year",
+    "Kilometers_Driven",
+    "Engine_CC",
+    "Power_bhp",
+    "Seats",
+    "Brand",
+    "Model",
+    "Fuel_Type",
+    "Transmission",
+    "Location"
+  ]
+}
