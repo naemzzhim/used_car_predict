@@ -7,8 +7,8 @@ from pathlib import Path
 
 # ==== Cấu hình ====
 TARGET_TRANSFORM = "log"   # bạn train Price_log = np.log(Price)
-MODEL_PATH = Path(r"C:\Users\ADMIN\Desktop\DATN\Used_Car_Price_Predict\model.joblib")
-META_PATH = Path(r"C:\Users\ADMIN\Desktop\DATN\Used_Car_Price_Predict\model_metadata.json")
+MODEL_PATH = Path("model.joblib")
+META_PATH = Path("model_metadata.json")
 
 # ==== Helpers ====
 def inverse_target(yhat: float) -> float:
@@ -110,3 +110,4 @@ if submit:
             st.write("Debug columns:", row_enc.columns.tolist())
     else:
         st.warning("⚠️ Model chưa được train hoặc load.")
+
