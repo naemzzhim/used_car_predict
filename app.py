@@ -104,10 +104,11 @@ if submit:
         try:
             yhat = float(model.predict(row_enc))
             price = inverse_target(yhat)
-            st.success(f"💰 Estimated Price: {int(price):,} triệu VND")
+            st.success(f"💰 Estimated Price: {int(price):,} millions VND")
         except Exception as e:
             st.error(f"Prediction failed: {e}")
             st.write("Debug columns:", row_enc.columns.tolist())
     else:
         st.warning("⚠️ Model chưa được train hoặc load.")
+
 
