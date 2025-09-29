@@ -122,10 +122,11 @@ if submit:
             "Location": location,
             "Seats": seats,
             "Fuel": fuel,
-            "Predicted Price": predicted_price
+            "Predicted Price": price
         }
     df = pd.DataFrame([input_data])
     st.dataframe(df_result)
+
 
 
 
