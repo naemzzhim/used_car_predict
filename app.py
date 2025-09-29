@@ -127,8 +127,8 @@ if page == "Prediction":
 
 
                 # Demo histogram (with simulated reference values)
-                demo_df = pd.DataFrame({"Price": np.random.normal(int(price), int(price)*0.2, 200)})
-                fig = px.histogram(demo_df, x="Price", nbins=30, title="Reference Price Distribution", color_discrete_sequence=["#2E86C1"])
+                demo_df = pd.DataFrame({"Price (M)": np.random.normal(int(price), int(price)*0.2, 200)})
+                fig = px.histogram(demo_df, x="Price (M)", nbins=30, title="Reference Price Distribution", color_discrete_sequence=["#2E86C1"])
                 st.plotly_chart(fig, use_container_width=True)
             else:
                 st.warning("⚠️ Model not loaded.")
@@ -140,6 +140,7 @@ elif page == "History":
         st.download_button("⬇️ Download CSV", st.session_state["history"].to_csv(index=False), "history.csv", "text/csv")
     else:
         st.info("No predictions yet.")
+
 
 
 
