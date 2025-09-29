@@ -98,7 +98,7 @@ if page == "Prediction":
                 price = inverse_target(yhat)
 
                 # Display result nicely
-                st.metric("💰 Estimated Price", f"{int(price):,} VND")
+                st.metric("💰 Estimated Price", f"{int(price):,}M VND")
 
                 # Save history
                 if "history" not in st.session_state:
@@ -123,4 +123,5 @@ elif page == "History":
         st.download_button("⬇️ Download CSV", st.session_state["history"].to_csv(index=False), "history.csv", "text/csv")
     else:
         st.info("No predictions yet.")
+
 
