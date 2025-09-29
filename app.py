@@ -116,7 +116,7 @@ if submit:
             "Age of car": age,
             "Km Driven": kilometers,
             "Transmission": transmission,
-            "Owner": Owner,
+            "Owner": owner,
             "Mileage": mileage,
             "Power": power,
             "Location": location,
@@ -126,6 +126,7 @@ if submit:
         }
     df = pd.DataFrame([input_data])
     st.dataframe(df_result)
+
 
 
 
