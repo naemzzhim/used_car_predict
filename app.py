@@ -39,7 +39,7 @@ if META_PATH.exists():
 # ==== Sidebar ====
 st.sidebar.image("https://img.icons8.com/color/96/000000/car.png", use_container_width=True)
 st.sidebar.title("🚗 Used Car Price Predictor")
-page = st.sidebar.radio("Chọn trang", ["Dự đoán", "Lịch sử"])
+page = st.sidebar.radio("Choose page", ["Prediction", "Prediction History"])
 
 # ==== Main UI ====
 if page == "Dự đoán":
@@ -48,7 +48,7 @@ if page == "Dự đoán":
     col1, col2 = st.columns([2, 3])
 
     with col1:
-        st.subheader("🔧 Nhập thông tin xe")
+        st.subheader("🔧 Type car's info")
         with st.form("car_form"):
             location = st.selectbox("Location", ["Ha Noi","Ho Chi Minh","Da Nang","Hai Phong","Quang Ninh","Can Tho"])
             kilometers = st.number_input("Kilometers Driven", 0, 2_000_000, 50000, 1000)
@@ -63,7 +63,7 @@ if page == "Dự đoán":
             submit = st.form_submit_button("🚀 Predict")
 
     with col2:
-        st.subheader("📊 Kết quả dự đoán")
+        st.subheader("📊 Result")
         if submit:
             row = pd.DataFrame([{
                 "Location": location,
@@ -114,13 +114,14 @@ if page == "Dự đoán":
                 fig = px.histogram(demo_df, x="Price", nbins=30, title="Phân bố giá tham chiếu", color_discrete_sequence=["#2E86C1"])
                 st.plotly_chart(fig, use_container_width=True)
             else:
-                st.warning("⚠️ Model chưa được load.")
+                st.warning("⚠️ Model cant be loaded.")
 
-elif page == "Lịch sử":
+elif page == "Prediction History":
     st.subheader("📜 Prediction History")
     if "history" in st.session_state and not st.session_state["history"].empty:
         st.dataframe(st.session_state["history"])
-        st.download_button("⬇️ Tải CSV", st.session_state["history"].to_csv(index=False), "history.csv", "text/csv")
+        st.download_button("⬇️ Download CSV", st.session_state["history"].to_csv(index=False), "history.csv", "text/csv")
     else:
-        st.info("Chưa có dự đoán nào.")
+        st.info("No predictions yet.")
+
 
