@@ -104,40 +104,45 @@ if submit:
         try:
             yhat = float(model.predict(row_enc))
             price = inverse_target(yhat)
-            st.success(f"💰 Estimated Price: {int(price):,} millions VND")
+            st.success(f"💰 Estimated Price: {int(price):,} VND")
         except Exception as e:
             st.error(f"Prediction failed: {e}")
             st.write("Debug columns:", row_enc.columns.tolist())
     else:
         st.warning("⚠️ Model chưa được train hoặc load.")
-    # Sau khi predict
-    # Khởi tạo DataFrame rỗng ngay từ đầu
+
+    # 6. Lưu lịch sử dự đoán
     if "history" not in st.session_state:
         st.session_state["history"] = pd.DataFrame(columns=[
             "Brand_Class", "Age of car", "Km Driven", "Transmission", "Owner",
             "Mileage", "Power", "Location", "Seats", "Fuel", "Predicted Price"
         ])
-    if st.button("Let's Predict Price"):
-        input_data = {
-                "Brand_Class": brand_class,
-                "Age of car": age,
-                "Km Driven": kilometers,
-                "Transmission": transmission,
-                "Owner": owner,
-                "Mileage": mileage,
-                "Power": power,
-                "Location": location,
-                "Seats": seats,
-                "Fuel": fuel,
-                "Predicted Price": price
-            }
-        # Append vào DataFrame trong session_state
-        st.session_state["history"] = pd.concat(
-            [st.session_state["history"], pd.DataFrame([input_data])],
-            ignore_index=True
-        )
-    # Hiển thị toàn bộ lịch sử
+
+    input_data = {
+        "Brand_Class": brand_class,
+        "Age of car": age,
+        "Km Driven": kilometers,
+        "Transmission": transmission,
+        "Owner": owner,
+        "Mileage": mileage,
+        "Power": power,
+        "Location": location,
+        "Seats": seats,
+        "Fuel": fuel,
+        "Predicted Price": price
+    }
+
+    st.session_state["history"] = pd.concat(
+        [st.session_state["history"], pd.DataFrame([input_data])],
+        ignore_index=True
+    )
+
+# 7. Hiển thị toàn bộ lịch sử bên ngoài if submit
+if "history" in st.session_state:
+    st.subheader("📜 Prediction History")
     st.dataframe(st.session_state["history"])
+
+
 
 
 
