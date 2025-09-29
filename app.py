@@ -129,11 +129,12 @@ if submit:
 
 
 fig, ax = plt.subplots()
-ax.hist(df["Price"], bins=30, color="skyblue", edgecolor="black")
+ax.hist(df["Predicted Price"], bins=30, color="skyblue", edgecolor="black")
 ax.set_title("Phân bố giá xe")
 ax.set_xlabel("Price (VND)")
 ax.set_ylabel("Số lượng xe")
 st.pyplot(fig)
+
 
 
 
