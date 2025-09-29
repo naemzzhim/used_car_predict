@@ -104,7 +104,7 @@ if page == "Prediction":
                 if "history" not in st.session_state:
                     st.session_state["history"] = pd.DataFrame(columns=row.columns.tolist() + ["Predicted Price"])
                 input_data = row.copy()
-                input_data["Predicted Price"] = int(price)
+                input_data["Predicted Price (M)"] = int(price)
                 st.session_state["history"] = pd.concat(
                     [st.session_state["history"], input_data], ignore_index=True
                 )
@@ -123,5 +123,6 @@ elif page == "History":
         st.download_button("⬇️ Download CSV", st.session_state["history"].to_csv(index=False), "history.csv", "text/csv")
     else:
         st.info("No predictions yet.")
+
 
 
