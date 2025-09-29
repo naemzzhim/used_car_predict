@@ -102,13 +102,13 @@ if page == "Prediction":
 
                 # Save history
                 if "history" not in st.session_state:
-                    st.session_state["history"] = pd.DataFrame(columns=row.columns.tolist())
-                input_data = row.copy()
-                input_data["Predicted Price (M)"] = int(price)
-                input_data = input_data.drop(columns=["Kilometers_Driven_log"])
+                    st.session_state["history"] = pd.DataFrame(columns=["Predicted Price (M)"])
+                
+                input_data = pd.DataFrame([{"Predicted Price (M)": int(price)}])
                 st.session_state["history"] = pd.concat(
                     [st.session_state["history"], input_data], ignore_index=True
                 )
+
 
                 # Demo histogram (with simulated reference values)
                 demo_df = pd.DataFrame({"Price": np.random.normal(int(price), int(price)*0.2, 200)})
