@@ -111,6 +111,12 @@ if submit:
     else:
         st.warning("⚠️ Model chưa được train hoặc load.")
     # Sau khi predict
+    # Khởi tạo DataFrame rỗng ngay từ đầu
+    if "history" not in st.session_state:
+        st.session_state["history"] = pd.DataFrame(columns=[
+            "Brand_Class", "Age of car", "Km Driven", "Transmission", "Owner",
+            "Mileage", "Power", "Location", "Seats", "Fuel", "Predicted Price"
+        ])
     if st.button("Let's Predict Price"):
         input_data = {
                 "Brand_Class": brand_class,
@@ -132,6 +138,7 @@ if submit:
         )
     # Hiển thị toàn bộ lịch sử
     st.dataframe(st.session_state["history"])
+
 
 
 
