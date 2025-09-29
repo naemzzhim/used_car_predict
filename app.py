@@ -37,7 +37,7 @@ if META_PATH.exists():
     model_cols = meta.get("features", None)
 
 # ==== Sidebar ====
-st.sidebar.image("https://img.icons8.com/color/96/000000/car.png", use_column_width=True)
+st.sidebar.image("https://img.icons8.com/color/96/000000/car.png", use_container_width=True)
 st.sidebar.title("🚗 Used Car Price Predictor")
 page = st.sidebar.radio("Chọn trang", ["Dự đoán", "Lịch sử"])
 
@@ -123,3 +123,4 @@ elif page == "Lịch sử":
         st.download_button("⬇️ Tải CSV", st.session_state["history"].to_csv(index=False), "history.csv", "text/csv")
     else:
         st.info("Chưa có dự đoán nào.")
+
