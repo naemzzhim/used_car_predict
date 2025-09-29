@@ -64,7 +64,7 @@ with st.form("car_form"):
     seats = st.number_input("Seats", min_value=2, max_value=9, value=5, step=1)
     age = st.number_input("Age of car (Years)", min_value=1, max_value=35, value=8, step=1)
     brand_class = st.selectbox("Brand Class", ["Low","Mid","High"])
-    submit = st.form_submit_button("Click here to Predict Price")
+    submit = st.form_submit_button("Let's Predict Price")
 
 if submit:
     # 1. Gom input thành DataFrame
@@ -110,5 +110,6 @@ if submit:
             st.write("Debug columns:", row_enc.columns.tolist())
     else:
         st.warning("⚠️ Model chưa được train hoặc load.")
+
 
 
