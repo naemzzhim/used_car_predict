@@ -117,4 +117,10 @@ if page == "Prediction":
                 st.warning("⚠️ Model not loaded.")
 
 elif page == "History":
-    st.s
+    st.subheader("📜 Prediction History")
+    if "history" in st.session_state and not st.session_state["history"].empty:
+        st.dataframe(st.session_state["history"])
+        st.download_button("⬇️ Download CSV", st.session_state["history"].to_csv(index=False), "history.csv", "text/csv")
+    else:
+        st.info("No predictions yet.")
+
