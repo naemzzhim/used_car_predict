@@ -100,13 +100,21 @@ if page == "Prediction":
                 # Display result nicely
                 st.metric("💰 Estimated Price", f"{int(price):,}M VND")
 
-                # Save history
-                if "history" not in st.session_state:
-                    st.session_state["history"] = pd.DataFrame(columns= row.columns.tolist() + ["Predicted Price (M)"])
+                # Save history (inputs + Predicted Price (M), bỏ Kilometers_Driven_log nếu có)
+                to_save = row.copy()
+                to_save = to_save.drop(columns=["Kilometers_Driven_log"], errors="ignore")
+                to_save["Predicted Price (M)"] = int(price)
                 
-                input_data = pd.DataFrame([{"Predicted Price (M)": int(price)}])
+                # Khởi tạo history với đúng schema ngay từ đầu
+                if "history" not in st.session_state or st.session_state["history"].empty:
+                    # (đưa Predicted Price (M) xuống cuối cho gọn)
+                    cols = [c for c in to_save.columns if c != "Predicted Price (M)"] + ["Predicted Price (M)"]
+                    st.session_state["history"] = pd.DataFrame(columns=cols)
+                
+                # Căn cột rồi mới nối
+                to_save = to_save.reindex(columns=st.session_state["history"].columns)
                 st.session_state["history"] = pd.concat(
-                    [st.session_state["history"], input_data], ignore_index=True
+                    [st.session_state["history"], to_save], ignore_index=True
                 )
 
 
@@ -124,6 +132,7 @@ elif page == "History":
         st.download_button("⬇️ Download CSV", st.session_state["history"].to_csv(index=False), "history.csv", "text/csv")
     else:
         st.info("No predictions yet.")
+
 
 
 
