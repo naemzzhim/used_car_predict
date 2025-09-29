@@ -111,21 +111,27 @@ if submit:
     else:
         st.warning("⚠️ Model chưa được train hoặc load.")
     # Sau khi predict
-    input_data = {
-            "Brand_Class": brand_class,
-            "Age of car": age,
-            "Km Driven": kilometers,
-            "Transmission": transmission,
-            "Owner": owner,
-            "Mileage": mileage,
-            "Power": power,
-            "Location": location,
-            "Seats": seats,
-            "Fuel": fuel,
-            "Predicted Price": price
-        }
-    df = pd.DataFrame([input_data])
-    st.dataframe(df)
+    if st.button("Let's Predict Price"):
+        input_data = {
+                "Brand_Class": brand_class,
+                "Age of car": age,
+                "Km Driven": kilometers,
+                "Transmission": transmission,
+                "Owner": owner,
+                "Mileage": mileage,
+                "Power": power,
+                "Location": location,
+                "Seats": seats,
+                "Fuel": fuel,
+                "Predicted Price": price
+            }
+        # Append vào DataFrame trong session_state
+        st.session_state["history"] = pd.concat(
+            [st.session_state["history"], pd.DataFrame([input_data])],
+            ignore_index=True
+        )
+    # Hiển thị toàn bộ lịch sử
+    st.dataframe(st.session_state["history"])
 
 
 
