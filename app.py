@@ -39,18 +39,18 @@ if META_PATH.exists():
 # ==== Sidebar ====
 st.sidebar.image("https://img.icons8.com/color/96/000000/car.png", use_container_width=True)
 st.sidebar.title("🚗 Used Car Price Predictor")
-page = st.sidebar.radio("Choose page", ["Prediction", "Prediction History"])
+page = st.sidebar.radio("Select page", ["Prediction", "History"])
 
 # ==== Main UI ====
-if page == "Dự đoán":
-    st.markdown("<h2 style='text-align: center; color:#2E86C1;'>Dự đoán giá xe ô tô cũ</h2>", unsafe_allow_html=True)
+if page == "Prediction":
+    st.markdown("<h2 style='text-align: center; color:#2E86C1;'>Used Car Price Prediction</h2>", unsafe_allow_html=True)
 
     col1, col2 = st.columns([2, 3])
 
     with col1:
-        st.subheader("🔧 Type car's info")
+        st.subheader("🔧 Enter Car Information")
         with st.form("car_form"):
-            location = st.selectbox("Location", ["Ha Noi","Ho Chi Minh","Da Nang","Hai Phong","Quang Ninh","Can Tho"])
+            location = st.selectbox("Location", ["Ha Noi","Ho Chi Minh","Da Nang","Hai Phong"])
             kilometers = st.number_input("Kilometers Driven", 0, 2_000_000, 50000, 1000)
             fuel = st.selectbox("Fuel Type", ["Petrol","Diesel"])
             transmission = st.selectbox("Transmission", ["Manual","Automatic"])
@@ -58,12 +58,12 @@ if page == "Dự đoán":
             mileage = st.number_input("Mileage (km/l)", 0.0, 60.0, 20.0, 0.1)
             power = st.number_input("Max Power (bhp)", 30.0, 700.0, 82.0, 1.0)
             seats = st.number_input("Seats", 2, 9, 5, 1)
-            age = st.number_input("Age of car (Years)", 1, 35, 8, 1)
+            age = st.number_input("Age of Car (Years)", 1, 35, 8, 1)
             brand_class = st.selectbox("Brand Class", ["Low","Mid","High"])
             submit = st.form_submit_button("🚀 Predict")
 
     with col2:
-        st.subheader("📊 Result")
+        st.subheader("📊 Prediction Result")
         if submit:
             row = pd.DataFrame([{
                 "Location": location,
@@ -97,10 +97,10 @@ if page == "Dự đoán":
                 yhat = float(model.predict(row_enc))
                 price = inverse_target(yhat)
 
-                # Hiển thị kết quả đẹp
+                # Display result nicely
                 st.metric("💰 Estimated Price", f"{int(price):,} VND")
 
-                # Lưu lịch sử
+                # Save history
                 if "history" not in st.session_state:
                     st.session_state["history"] = pd.DataFrame(columns=row.columns.tolist() + ["Predicted Price"])
                 input_data = row.copy()
@@ -109,19 +109,12 @@ if page == "Dự đoán":
                     [st.session_state["history"], input_data], ignore_index=True
                 )
 
-                # Demo histogram (ví dụ với giá trị giả định)
+                # Demo histogram (with simulated reference values)
                 demo_df = pd.DataFrame({"Price": np.random.normal(int(price), int(price)*0.2, 200)})
-                fig = px.histogram(demo_df, x="Price", nbins=30, title="Phân bố giá tham chiếu", color_discrete_sequence=["#2E86C1"])
+                fig = px.histogram(demo_df, x="Price", nbins=30, title="Reference Price Distribution", color_discrete_sequence=["#2E86C1"])
                 st.plotly_chart(fig, use_container_width=True)
             else:
-                st.warning("⚠️ Model cant be loaded.")
+                st.warning("⚠️ Model not loaded.")
 
-elif page == "Prediction History":
-    st.subheader("📜 Prediction History")
-    if "history" in st.session_state and not st.session_state["history"].empty:
-        st.dataframe(st.session_state["history"])
-        st.download_button("⬇️ Download CSV", st.session_state["history"].to_csv(index=False), "history.csv", "text/csv")
-    else:
-        st.info("No predictions yet.")
-
-
+elif page == "History":
+    st.s
