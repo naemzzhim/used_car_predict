@@ -102,9 +102,10 @@ if page == "Prediction":
 
                 # Save history
                 if "history" not in st.session_state:
-                    st.session_state["history"] = pd.DataFrame(columns=row.columns.tolist() + ["Predicted Price"])
+                    st.session_state["history"] = pd.DataFrame(columns=row.columns.tolist())
                 input_data = row.copy()
                 input_data["Predicted Price (M)"] = int(price)
+                input_data = input_data.drop(columns=["Kilometers_Driven_log"])
                 st.session_state["history"] = pd.concat(
                     [st.session_state["history"], input_data], ignore_index=True
                 )
@@ -123,6 +124,7 @@ elif page == "History":
         st.download_button("⬇️ Download CSV", st.session_state["history"].to_csv(index=False), "history.csv", "text/csv")
     else:
         st.info("No predictions yet.")
+
 
 
 
