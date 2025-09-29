@@ -125,7 +125,8 @@ if submit:
             "Predicted Price": price
         }
     df = pd.DataFrame([input_data])
-    st.dataframe(df_result)
+    st.dataframe(df)
+
 
 
 
