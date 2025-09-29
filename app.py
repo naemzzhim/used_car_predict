@@ -43,26 +43,34 @@ page = st.sidebar.radio("Select page", ["Prediction", "History"])
 
 # ==== Main UI ====
 if page == "Prediction":
-    st.markdown("<h2 style='text-align: center; color:#2E86C1;'>Used Car Price Prediction</h2>", unsafe_allow_html=True)
+    st.markdown(
+        "<h2 style='text-align: center; color:#2E86C1;'>Used Car Price Prediction</h2>", 
+        unsafe_allow_html=True
+    )
 
-    col1, col2 = st.columns([2, 3])
+    st.subheader("🔧 Enter Car Information")
 
-    with col1:
-        st.subheader("🔧 Enter Car Information")
-        with st.form("car_form"):
+    # Form với 2 cột
+    with st.form("car_form"):
+        col1, col2 = st.columns(2)
+
+        with col1:
             location = st.selectbox("Location", ["Ha Noi","Ho Chi Minh","Da Nang","Hai Phong"])
             kilometers = st.number_input("Kilometers Driven", 0, 2_000_000, 50000, 1000)
             fuel = st.selectbox("Fuel Type", ["Petrol","Diesel"])
             transmission = st.selectbox("Transmission", ["Manual","Automatic"])
             owner = st.selectbox("Owner Type", ["First","Second","Third","Fourth & Above"])
+
+        with col2:
             mileage = st.number_input("Mileage (km/l)", 0.0, 60.0, 20.0, 0.1)
             power = st.number_input("Max Power (bhp)", 30.0, 700.0, 82.0, 1.0)
             seats = st.number_input("Seats", 2, 9, 5, 1)
             age = st.number_input("Age of Car (Years)", 1, 35, 8, 1)
             brand_class = st.selectbox("Brand Class", ["Low","Mid","High"])
-            submit = st.form_submit_button("🚀 Predict")
 
-    with col2:
+        submit = st.form_submit_button("🚀 Predict")
+
+    # Prediction Result ở dưới form
         st.subheader("📊 Prediction Result")
         if submit:
             row = pd.DataFrame([{
@@ -132,6 +140,7 @@ elif page == "History":
         st.download_button("⬇️ Download CSV", st.session_state["history"].to_csv(index=False), "history.csv", "text/csv")
     else:
         st.info("No predictions yet.")
+
 
 
 
