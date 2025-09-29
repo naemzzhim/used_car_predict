@@ -4,9 +4,10 @@ import numpy as np
 import joblib, json
 import statsmodels.api as sm
 from pathlib import Path
-import matplotlib.pyplot as plt
-# ==== Cấu hình ====
-TARGET_TRANSFORM = "log"   # bạn train Price_log = np.log(Price)
+import plotly.express as px
+
+# ==== Config ====
+TARGET_TRANSFORM = "log"
 MODEL_PATH = Path("model.joblib")
 META_PATH = Path("model_metadata.json")
 
@@ -19,140 +20,106 @@ def inverse_target(yhat: float) -> float:
     return yhat
 
 def encode_cat_vars(x: pd.DataFrame) -> pd.DataFrame:
-    """One-hot encode các cột object/category, drop_first=True"""
     return pd.get_dummies(
         x,
         columns=x.select_dtypes(include=["object", "category"]).columns.tolist(),
         drop_first=True,
     )
 
-# ==== Load model + metadata ====
-model = None
-model_cols = None
-
+# ==== Load model ====
+model, model_cols = None, None
 if MODEL_PATH.exists():
-    try:
-        model = joblib.load(MODEL_PATH)
-        st.success("✅ Model loaded thành công")
-    except Exception as e:
-        st.error(f"Lỗi load model: {e}")
+    model = joblib.load(MODEL_PATH)
 
 if META_PATH.exists():
-    try:
-        meta = json.loads(META_PATH.read_text())
-        TARGET_TRANSFORM = meta.get("target_transform", TARGET_TRANSFORM)
-        model_cols = meta.get("features", None)
-    except Exception as e:
-        st.warning(f"Không đọc được metadata: {e}")
+    meta = json.loads(META_PATH.read_text())
+    TARGET_TRANSFORM = meta.get("target_transform", TARGET_TRANSFORM)
+    model_cols = meta.get("features", None)
 
-# ==== Giao diện web ====
-st.title("🚗 Used Car Price Predictor")
-st.write("Hi! This is my first Streamlit website, try it on! 🎉")
-st.header("Type your car's information")
+# ==== Sidebar ====
+st.sidebar.image("https://img.icons8.com/color/96/000000/car.png", use_column_width=True)
+st.sidebar.title("🚗 Used Car Price Predictor")
+page = st.sidebar.radio("Chọn trang", ["Dự đoán", "Lịch sử"])
 
-with st.form("car_form"):
-    location = st.selectbox("Location", ["Ha Noi", "Ho Chi Minh", "Da Nang", "Hai Phong", "Can Tho",
-    "Thanh Hoa", "Nghe An", "Hue", "Quang Ninh", "Hai Duong",
-    "Bac Ninh", "Nam Dinh", "Thai Binh", "Ha Nam", "Ninh Binh",
-    "Lao Cai", "Lang Son", "Bac Giang", "Phu Tho", "Thai Nguyen"])
-    kilometers = st.number_input("Kilometers Driven", min_value=0, max_value=2_000_000, value=50000, step=1000)
-    fuel = st.selectbox("Fuel Type", ["Petrol","Diesel"])
-    transmission = st.selectbox("Transmission", ["Manual","Automatic"])
-    owner = st.selectbox("Owner Type", ["First","Second","Third","Fourth & Above"])
-    mileage = st.number_input("Mileage (km/l)", min_value=0.0, max_value=60.0, value=20.0, step=0.1)
-    power = st.number_input("Max Power (bhp)", min_value=30.0, max_value=700.0, value=82.0, step=1.0)
-    seats = st.number_input("Seats", min_value=2, max_value=9, value=5, step=1)
-    age = st.number_input("Age of car (Years)", min_value=1, max_value=35, value=8, step=1)
-    brand_class = st.selectbox("Brand Class", ["Low","Mid","High"])
-    submit = st.form_submit_button("Let's Predict Price")
+# ==== Main UI ====
+if page == "Dự đoán":
+    st.markdown("<h2 style='text-align: center; color:#2E86C1;'>Dự đoán giá xe ô tô cũ</h2>", unsafe_allow_html=True)
 
-if submit:
-    # 1. Gom input thành DataFrame
-    row = pd.DataFrame([{
-        "Location": location,
-        "Kilometers_Driven": kilometers,
-        "Fuel_Type": fuel,
-        "Transmission": transmission,
-        "Owner_Type": owner,
-        "Mileage": mileage,
-        "Power": power,
-        "Seats": seats,
-        "Ageofcar": age,
-        "Brand_Class": brand_class,
-    }])
+    col1, col2 = st.columns([2, 3])
 
-    # 2. Sinh thêm feature log nếu model cần
-    if model is not None and hasattr(model, "model"):
-        if "Kilometers_Driven_log" in model.model.exog_names:
-            row["Kilometers_Driven_log"] = np.log1p(row["Kilometers_Driven"])
+    with col1:
+        st.subheader("🔧 Nhập thông tin xe")
+        with st.form("car_form"):
+            location = st.selectbox("Location", ["Ha Noi","Ho Chi Minh","Da Nang","Hai Phong","Quang Ninh","Can Tho"])
+            kilometers = st.number_input("Kilometers Driven", 0, 2_000_000, 50000, 1000)
+            fuel = st.selectbox("Fuel Type", ["Petrol","Diesel"])
+            transmission = st.selectbox("Transmission", ["Manual","Automatic"])
+            owner = st.selectbox("Owner Type", ["First","Second","Third","Fourth & Above"])
+            mileage = st.number_input("Mileage (km/l)", 0.0, 60.0, 20.0, 0.1)
+            power = st.number_input("Max Power (bhp)", 30.0, 700.0, 82.0, 1.0)
+            seats = st.number_input("Seats", 2, 9, 5, 1)
+            age = st.number_input("Age of car (Years)", 1, 35, 8, 1)
+            brand_class = st.selectbox("Brand Class", ["Low","Mid","High"])
+            submit = st.form_submit_button("🚀 Predict")
 
-    # 3. Encode categorical
-    row_enc = encode_cat_vars(row).apply(pd.to_numeric, errors="coerce")
+    with col2:
+        st.subheader("📊 Kết quả dự đoán")
+        if submit:
+            row = pd.DataFrame([{
+                "Location": location,
+                "Kilometers_Driven": kilometers,
+                "Fuel_Type": fuel,
+                "Transmission": transmission,
+                "Owner_Type": owner,
+                "Mileage": mileage,
+                "Power": power,
+                "Seats": seats,
+                "Ageofcar": age,
+                "Brand_Class": brand_class,
+            }])
 
-    # 4. Đồng bộ cột theo exog_names
-    if model is not None and hasattr(model, "model"):
-        model_cols = model.model.exog_names
-    if model_cols:
-        if "const" in model_cols and "const" not in row_enc.columns:
-            row_enc = sm.add_constant(row_enc, has_constant="add")
-        elif "const" not in model_cols and "const" in row_enc.columns:
-            row_enc = row_enc.drop(columns="const")
-        row_enc = row_enc.reindex(columns=model_cols, fill_value=0.0)
+            if model is not None and hasattr(model, "model"):
+                if "Kilometers_Driven_log" in model.model.exog_names:
+                    row["Kilometers_Driven_log"] = np.log1p(row["Kilometers_Driven"])
 
-    # 5. Dự đoán
-    if model is not None:
-        try:
-            yhat = float(model.predict(row_enc))
-            price = inverse_target(yhat)
-            st.success(f"💰 Estimated Price: {int(price):,} VND")
-        except Exception as e:
-            st.error(f"Prediction failed: {e}")
-            st.write("Debug columns:", row_enc.columns.tolist())
-    else:
-        st.warning("⚠️ Model chưa được train hoặc load.")
+            row_enc = encode_cat_vars(row).apply(pd.to_numeric, errors="coerce")
 
-    # 6. Lưu lịch sử dự đoán
-    if "history" not in st.session_state:
-        st.session_state["history"] = pd.DataFrame(columns=[
-            "Brand_Class", "Age of car", "Km Driven", "Transmission", "Owner",
-            "Mileage", "Power", "Location", "Seats", "Fuel", "Predicted Price"
-        ])
+            if model is not None and hasattr(model, "model"):
+                model_cols = model.model.exog_names
+            if model_cols:
+                if "const" in model_cols and "const" not in row_enc.columns:
+                    row_enc = sm.add_constant(row_enc, has_constant="add")
+                elif "const" not in model_cols and "const" in row_enc.columns:
+                    row_enc = row_enc.drop(columns="const")
+                row_enc = row_enc.reindex(columns=model_cols, fill_value=0.0)
 
-    input_data = {
-        "Brand_Class": brand_class,
-        "Age of car": age,
-        "Km Driven": kilometers,
-        "Transmission": transmission,
-        "Owner": owner,
-        "Mileage": mileage,
-        "Power": power,
-        "Location": location,
-        "Seats": seats,
-        "Fuel": fuel,
-        "Predicted Price": price
-    }
+            if model is not None:
+                yhat = float(model.predict(row_enc))
+                price = inverse_target(yhat)
 
-    st.session_state["history"] = pd.concat(
-        [st.session_state["history"], pd.DataFrame([input_data])],
-        ignore_index=True
-    )
+                # Hiển thị kết quả đẹp
+                st.metric("💰 Estimated Price", f"{int(price):,} VND")
 
-# 7. Hiển thị toàn bộ lịch sử bên ngoài if submit
-if "history" in st.session_state:
+                # Lưu lịch sử
+                if "history" not in st.session_state:
+                    st.session_state["history"] = pd.DataFrame(columns=row.columns.tolist() + ["Predicted Price"])
+                input_data = row.copy()
+                input_data["Predicted Price"] = int(price)
+                st.session_state["history"] = pd.concat(
+                    [st.session_state["history"], input_data], ignore_index=True
+                )
+
+                # Demo histogram (ví dụ với giá trị giả định)
+                demo_df = pd.DataFrame({"Price": np.random.normal(int(price), int(price)*0.2, 200)})
+                fig = px.histogram(demo_df, x="Price", nbins=30, title="Phân bố giá tham chiếu", color_discrete_sequence=["#2E86C1"])
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.warning("⚠️ Model chưa được load.")
+
+elif page == "Lịch sử":
     st.subheader("📜 Prediction History")
-    st.dataframe(st.session_state["history"])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    if "history" in st.session_state and not st.session_state["history"].empty:
+        st.dataframe(st.session_state["history"])
+        st.download_button("⬇️ Tải CSV", st.session_state["history"].to_csv(index=False), "history.csv", "text/csv")
+    else:
+        st.info("Chưa có dự đoán nào.")
