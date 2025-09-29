@@ -4,7 +4,7 @@ import numpy as np
 import joblib, json
 import statsmodels.api as sm
 from pathlib import Path
-
+import matplotlib.pyplot as plt
 # ==== Cấu hình ====
 TARGET_TRANSFORM = "log"   # bạn train Price_log = np.log(Price)
 MODEL_PATH = Path("model.joblib")
@@ -110,6 +110,31 @@ if submit:
             st.write("Debug columns:", row_enc.columns.tolist())
     else:
         st.warning("⚠️ Model chưa được train hoặc load.")
+    # Sau khi predict
+    input_data = {
+            "Brand_Class": brand_class,
+            "Age of car": age,
+            "Km Driven": kilometers,
+            "Transmission": transmission,
+            "Owner": Owner,
+            "Mileage": mileage,
+            "Power": power,
+            "Location": location,
+            "Seats": seats,
+            "Fuel": fuel,
+            "Predicted Price": predicted_price
+        }
+    df = pd.DataFrame([input_data])
+    st.dataframe(df_result)
+
+
+fig, ax = plt.subplots()
+ax.hist(df["Price"], bins=30, color="skyblue", edgecolor="black")
+ax.set_title("Phân bố giá xe")
+ax.set_xlabel("Price (VND)")
+ax.set_ylabel("Số lượng xe")
+st.pyplot(fig)
+
 
 
 
