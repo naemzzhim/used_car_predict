@@ -1,7 +1,6 @@
 [theme]
-base="light"
-primaryColor="#87cefa"
-backgroundColor="#F8F9F9"
-secondaryBackgroundColor="#D6EAF8"
-textColor="#1B2631"
-font="sans serif"
+primaryColor = "#FF4B4B"         # màu nút chính (Predict button)
+backgroundColor = "#FFFFFF"      # màu nền chính
+secondaryBackgroundColor = "#D6EAF8"  # sidebar nền xanh nhạt
+textColor = "#000000"            # màu chữ
+font = "sans serif"
