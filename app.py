@@ -55,7 +55,8 @@ if page == "Prediction":
         col1, col2 = st.columns(2)
 
         with col1:
-            location = st.selectbox("Location", ["Ha Noi","Ho Chi Minh","Da Nang","Hai Phong","Quang Ninh","Nghe An","Phu Tho","Can Tho","Hung Yen","Dong Nai","Thanh Hoa","Khanh Hoa"])
+            location = st.selectbox("Location", ["Ha Noi","Cao Bang","Tuyen Quang","Dien Bien","Lai Chau","Son La","Lao Cai","Thai Nguyen","Lang Son","Quang Ninh","Bac Ninh","Phu Tho","Hai Phong","Hung Yen","Ninh Binh","Thanh Hoa","Nghe An","Ha Tinh","Quang Tri","Hue","Da Nang","Quang Ngai","Gia Lai","Khanh Hoa","Dak Lak","Lam Dong","Dong Nai","Ho Chi Minh","Tay Ninh","Dong Thap","Vinh Long","An Giang","Can Tho","Ca Mau"
+])
             kilometers = st.number_input("Kilometers Driven", 0, 2_000_000, 50000, 1000)
             fuel = st.selectbox("Fuel Type", ["Petrol","Diesel"])
             transmission = st.selectbox("Transmission", ["Manual","Automatic"])
@@ -140,6 +141,7 @@ elif page == "History":
         st.download_button("⬇️ Download CSV", st.session_state["history"].to_csv(index=False), "history.csv", "text/csv")
     else:
         st.info("No predictions yet.")
+
 
 
 
